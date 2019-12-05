@@ -77,14 +77,9 @@ func imageFromFile(path string) (*pb.Image, error) {
 
 func isValidURL(toTest string) bool {
 
-	// if strings.Contains(toTest, "gs://") {
-	// 	return true
-	// }
-
 	_, err := url.ParseRequestURI(toTest)
 	if err != nil {
 		return false
-	} else {
-		return true
 	}
+	return true
 }
