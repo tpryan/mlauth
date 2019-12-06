@@ -60,36 +60,41 @@ func TestAuth(t *testing.T) {
 
 func TestFindLabels(t *testing.T) {
 	cases := []struct {
-		term string
-		file string
+		term      string
+		file      string
+		shouldErr bool
 	}{
-		{"Golden Retriever", "testdata/dog.jpg"},
-		{"dishware", "testdata/plate.jpg"},
-		{"floral", "testdata/decoration.jpg"},
-		{"fork", "testdata/fork.jpg"},
-		{"soda", "testdata/soda.jpg"},
-		{"can", "testdata/soda.jpg"},
-		{"Coca-cola", "testdata/soda.jpg"},
-		{"Golden Retriever", gcs + "/dog.jpg"},
-		{"dishware", gcs + "/plate.jpg"},
-		{"floral", gcs + "/decoration.jpg"},
-		{"fork", gcs + "/fork.jpg"},
-		{"soda", gcs + "/soda.jpg"},
-		{"can", gcs + "/soda.jpg"},
-		{"Coca-cola", gcs + "/soda.jpg"},
-		{"Golden Retriever", web + "/dog.jpg"},
-		{"dishware", web + "/plate.jpg"},
-		{"floral", web + "/decoration.jpg"},
-		{"fork", web + "/fork.jpg"},
-		{"soda", web + "/soda.jpg"},
-		{"can", web + "/soda.jpg"},
-		{"Coca-cola", web + "/soda.jpg"},
+		{"", "", true},
+		{"", "testdata/blank.txt", true},
+		{"Golden Retriever", "testdata/dog.jpg", false},
+		{"dishware", "testdata/plate.jpg", false},
+		{"floral", "testdata/decoration.jpg", false},
+		{"fork", "testdata/fork.jpg", false},
+		{"soda", "testdata/soda.jpg", false},
+		{"can", "testdata/soda.jpg", false},
+		{"Coca-cola", "testdata/soda.jpg", false},
+		{"Golden Retriever", gcs + "/dog.jpg", false},
+		{"dishware", gcs + "/plate.jpg", false},
+		{"floral", gcs + "/decoration.jpg", false},
+		{"fork", gcs + "/fork.jpg", false},
+		{"soda", gcs + "/soda.jpg", false},
+		{"can", gcs + "/soda.jpg", false},
+		{"Coca-cola", gcs + "/soda.jpg", false},
+		{"Golden Retriever", web + "/dog.jpg", false},
+		{"dishware", web + "/plate.jpg", false},
+		{"floral", web + "/decoration.jpg", false},
+		{"fork", web + "/fork.jpg", false},
+		{"soda", web + "/soda.jpg", false},
+		{"can", web + "/soda.jpg", false},
+		{"Coca-cola", web + "/soda.jpg", false},
 	}
 
 	for _, c := range cases {
 		got, err := findLabels(c.file)
-		if err != nil && c.file != "" {
-			t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+		if err != nil {
+			if !c.shouldErr {
+				t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+			}
 			continue
 		}
 
@@ -106,4 +111,25 @@ func TestFindLabels(t *testing.T) {
 
 	}
 
+}
+
+func TestIsValidURL(t *testing.T) {
+	cases := []struct {
+		in   string
+		want bool
+	}{
+		{"", false},
+		{"fjcvj48fhr74hr8f", false},
+		{"http://dwdwf.com", true},
+		{"https://dwdwf.com", true},
+		{"http://dwdwf", true},
+		{"https://dwdwf", true},
+	}
+
+	for _, c := range cases {
+		got := isValidURL(c.in)
+		if got != c.want {
+			t.Errorf("isValidURL('%s') got %t, want %t", c.in, got, c.want)
+		}
+	}
 }
