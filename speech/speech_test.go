@@ -1,9 +1,13 @@
 package speech
 
 import (
+	"os"
 	"strings"
 	"testing"
 )
+
+var gcs = "gs://" + os.Getenv("mlauth_bucket") + "/speech"
+var web = "https://storage.googleapis.com/" + os.Getenv("mlauth_bucket") + "/speech"
 
 func TestAuth(t *testing.T) {
 	cases := []struct {
@@ -15,6 +19,14 @@ func TestAuth(t *testing.T) {
 		{"Walker", "testdata/audio.raw", false},
 		{"quit", "testdata/quit.raw", true},
 		{"Walker", "testdata/quit.raw", false},
+		{"Brooklyn", gcs + "/audio.raw", true},
+		{"Walker", gcs + "/audio.raw", false},
+		{"quit", gcs + "/quit.raw", true},
+		{"Walker", gcs + "/quit.raw", false},
+		{"Brooklyn", web + "/audio.raw", false},
+		{"Walker", web + "/audio.raw", false},
+		{"quit", web + "/quit.raw", false},
+		{"Walker", web + "/quit.raw", false},
 		{"", "", false},
 	}
 
@@ -35,6 +47,15 @@ func TestFindContent(t *testing.T) {
 		{"Brooklyn", "testdata/audio.raw", false},
 		{"quit", "testdata/quit.raw", false},
 		{"conference", "testdata/voicememo.m4a", true},
+
+		{"Brooklyn", gcs + "/audio.raw", false},
+		{"quit", gcs + "/quit.raw", false},
+		{"conference", gcs + "/voicememo.m4a", true},
+
+		{"Brooklyn", web + "/audio.raw", true},
+		{"quit", web + "/quit.raw", true},
+		{"conference", web + "/voicememo.m4a", true},
+
 		{"", "", true},
 	}
 

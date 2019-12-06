@@ -43,6 +43,11 @@ func findContent(file string) ([]string, error) {
 	req := &speechpb.RecognizeRequest{}
 
 	if isValidURL(file) {
+
+		if file[0:4] == "gs://" {
+			return nil, fmt.Errorf("speech api only works on Cloud Storage URI's")
+		}
+
 		req = getReqFromURI(file)
 	} else {
 		req, err = getReqFromFile(file)
