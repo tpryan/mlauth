@@ -15,6 +15,7 @@ init: env
 services:
 	gcloud services enable vision.googleapis.com	
 	gcloud services enable speech.googleapis.com
+	gcloud services enable language.googleapis.com
 
 
 clean: 
