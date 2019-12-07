@@ -62,8 +62,6 @@ func findSentiment(source string) (map[string]float32, error) {
 		return nil, fmt.Errorf("error analyzing text: %s", err)
 	}
 
-	// fmt.Printf("%+v\n", resp)
-
 	res := make(map[string]float32)
 
 	for _, v := range resp.Entities {
