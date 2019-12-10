@@ -13,6 +13,9 @@ func TestAuth(t *testing.T) {
 		{"location", "I hate staying at Marriott.", false, true},
 		{"location", "I love staying at Marriott hotels.", false, false},
 		{"location", "I hate staying at Marriott.", true, false},
+		{"organization", "Google is a great place to work. ", true, true},
+		{"organization", "Google is a great place to work. ", false, false},
+		{"CONSUMER_GOOD", "Diet Vanilla Coke is absolutely the best beverage ever created.", true, true},
 	}
 
 	for _, c := range cases {
