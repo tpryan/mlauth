@@ -4,6 +4,9 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	vision "cloud.google.com/go/vision/apiv1"
+	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
 var gcs = "gs://" + os.Getenv("mlauth_bucket") + "/vision"
@@ -90,7 +93,22 @@ func TestFindLabels(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, err := findLabels(c.file)
+
+		var image *pb.Image
+		var err error
+
+		if isValidURL(c.file) {
+			image = vision.NewImageFromURI(c.file)
+		} else {
+			image, err = imageFromFile(c.file)
+			if err != nil {
+				if !c.shouldErr {
+					t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+				}
+			}
+		}
+
+		got, err := findLabels(image)
 		if err != nil {
 			if !c.shouldErr {
 				t.Errorf("findLabels(%s) threw error: %s", c.file, err)
@@ -124,6 +142,8 @@ func TestIsValidURL(t *testing.T) {
 		{"https://dwdwf.com", true},
 		{"http://dwdwf", true},
 		{"https://dwdwf", true},
+		{"/Users/username/file", false},
+		{"gs://bucket/file", true},
 	}
 
 	for _, c := range cases {

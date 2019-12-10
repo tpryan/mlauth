@@ -2,6 +2,7 @@ package vision
 
 import (
 	"context"
+	"io"
 	"net/url"
 	"os"
 	"strings"
@@ -14,7 +15,35 @@ import (
 // the an item matching the input term is contained in the image
 func Auth(term, file string) (bool, error) {
 
-	ann, err := findLabels(file)
+	var image *pb.Image
+	var err error
+
+	if isValidURL(file) {
+		image = vision.NewImageFromURI(file)
+	} else {
+		image, err = imageFromFile(file)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return compareAuth(image, term)
+}
+
+// AuthFromReader takes a picture and a term and compares them to each other
+// to see if the an item matching the input term is contained in the image
+func AuthFromReader(term string, file io.Reader) (bool, error) {
+
+	image, err := vision.NewImageFromReader(file)
+	if err != nil {
+		return false, err
+	}
+
+	return compareAuth(image, term)
+}
+
+func compareAuth(image *pb.Image, term string) (bool, error) {
+	ann, err := findLabels(image)
 
 	if err != nil {
 		return false, err
@@ -29,8 +58,7 @@ func Auth(term, file string) (bool, error) {
 	return false, nil
 }
 
-func findLabels(file string) ([]string, error) {
-	var image *pb.Image
+func findLabels(image *pb.Image) ([]string, error) {
 	ctx := context.Background()
 
 	client, err := vision.NewImageAnnotatorClient(ctx)
@@ -38,16 +66,6 @@ func findLabels(file string) ([]string, error) {
 		return nil, err
 	}
 	defer client.Close()
-
-	if isValidURL(file) {
-		image = vision.NewImageFromURI(file)
-	} else {
-		image, err = imageFromFile(file)
-		if err != nil {
-			return nil, err
-		}
-
-	}
 
 	annotations, err := client.DetectLabels(ctx, image, nil, 10)
 	if err != nil {
@@ -77,9 +95,14 @@ func imageFromFile(path string) (*pb.Image, error) {
 
 func isValidURL(toTest string) bool {
 
-	_, err := url.ParseRequestURI(toTest)
+	r, err := url.ParseRequestURI(toTest)
 	if err != nil {
 		return false
 	}
-	return true
+
+	if r.Scheme == "http" || r.Scheme == "https" || r.Scheme == "gs" {
+		return true
+	}
+	return false
+
 }
