@@ -1,0 +1,129 @@
+html{
+    font-family: Roboto, Helvetica, Arial, sans-serif;
+    font-weight: 100;
+}
+
+h1{
+    margin: 15px 1%;
+}
+
+h1, h2{
+    font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.content{
+    display: flex;
+}
+
+.item{
+    flex-wrap: wrap;
+    width: 30%;
+    margin: 0 1%;
+    text-align: center;
+    border-radius: 8px;
+    border: 6px solid #a5c0e8;
+    padding: 10px;
+    background-color: #e6eaf0;
+}
+
+.item p{
+    height: 60px;
+    position: relative;
+}
+
+.item-unlocked{
+    background-color: #e6f0eb;
+    border: 6px solid #b4f0d2;
+}
+
+.item-failed{
+    background-color: #f0e6e6;
+    border: 6px solid #eb9494
+}
+.secret{
+    text-align: center;
+    font-size: 18px;
+    border-radius: 8px;
+    margin: 15px 1%;
+    border: 6px solid #ccc;
+    padding: 10px;
+    background-color: #efefef;
+    display: none;
+}
+
+.secret-content{
+    font-weight: 800;
+    font-style: italic;
+    color: #222222;
+    font-size: 24px;
+}
+
+.alert{
+    border: 1px solid red;
+    border-radius: 4px;
+    padding: 10px;
+    margin: 10px;
+    background-color: #dbafaf;
+    visibility: hidden;
+}
+
+.file{
+    padding-left: 30px; 
+}
+
+.lbl{
+    margin: 5px 0;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.file:focus {
+    outline: 0px solid transparent;
+}
+.file::-webkit-file-upload-button {
+    visibility: hidden;
+}
+.file::before {
+    content: 'Choose File';
+    display: inline-block;
+    background-color: #fff;
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 5px 8px;
+    outline: none;
+    white-space: nowrap;
+    -webkit-user-select: none;
+    cursor: pointer;
+    text-shadow: 1px 1px #eee;
+    font-weight: 700;
+    font-size: 10pt;
+    position: relative;
+    left: -20px; 
+}
+.file:hover::before {
+    border-color: black;
+}
+.file:active::before {
+    background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+}
+
+.text-box{
+    display: inline-block;
+    background-color: #fff;
+    border: 1px solid #999;
+    border-radius: 3px;
+    padding: 5px 0px 5px 3px;
+    outline: none;
+    text-shadow: 1px 1px #eee;
+    font-weight: 700;
+    font-size: 10pt;
+    width: 100%;
+}  
+
+em, q{
+    font-weight: 400;
+}
+
+q{
+    font-style: italic;
+}

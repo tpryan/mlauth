@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>ML Scavneger Hunt</title>
+</head>
+<link rel="stylesheet" href="/assets/css/main.css" type="text/css" media="screen" />
+<body>
+<h1>ML Scavenger Hunt</h1>
+<div class="content">
+    <div class="vision item">
+        <h2>Vision Test</h2>
+        <div class="alert">That image didn't match what we are looking for.</div>
+        <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
+        <p>Upload a picture of a <q class="key"></q>.</p>
+        <label for="file-vision">
+            <div class="lbl">Upload Picture:</div>
+            <input id="file-vision" type="file" class="file" title=" ">
+        </label>
+    </div>
+    <div class="speech item">
+        <h2>Speech Test</h2>
+        <div class="alert">That sound clip didn't match what we are looking for.</div>
+        <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
+        <p>Upload a audio file that contains the word <q class="key"></q>.</p>
+        <label for="file-speech">
+            <div class="lbl">Upload audio file:</div>
+            <input id="file-speech" type="file" class="file" title=" ">
+        </label>
+    </div>
+    <div class="language item">
+        <h2>Language Test</h2>
+        <div class="alert">That sentence didn't contain what we are looking for.</div>
+        <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
+        <p>Enter a sentence that contains a <em class="positive"></em> statement about a <q class="key"></q>. </p>
+        <label for="text-language">
+            <div class="lbl">Enter Sentence:</div>
+            <input id="text-language" class="text-box" type="text">
+        </label>
+    </div>
+</div>
+<div class="secret">
+    <p>You have unlocked the secret content:</p>
+    <div class="secret-content">This is the secret content</div>
+</div>    
+    
+<script type="text/javascript" src="/assets/js/main.js"></script>
+</body>
+</html>
