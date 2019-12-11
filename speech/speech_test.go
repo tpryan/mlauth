@@ -4,6 +4,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 var gcs = "gs://" + os.Getenv("mlauth_bucket") + "/speech"
@@ -60,7 +62,29 @@ func TestFindContent(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, err := findContent(c.file)
+
+		var req *speechpb.RecognizeRequest
+		var err error
+
+		if isValidURL(c.file) {
+
+			if c.file[0:4] == "gs://" {
+				if !c.shouldErr {
+					t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+				}
+			}
+
+			req = getReqFromURI(c.file)
+		} else {
+			req, err = getReqFromFile(c.file)
+			if err != nil {
+				if !c.shouldErr {
+					t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+				}
+			}
+		}
+
+		got, err := findContent(req)
 		if err != nil {
 			if !c.shouldErr {
 				t.Errorf("findLabels(%s) threw error: %s", c.file, err)

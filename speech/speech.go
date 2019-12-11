@@ -1,8 +1,10 @@
 package speech
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net/url"
 	"strings"
@@ -15,7 +17,41 @@ import (
 // the an item matching the input term is contained in the audio file
 func Auth(term, file string) (bool, error) {
 
-	ann, err := findContent(file)
+	var err error
+	req := &speechpb.RecognizeRequest{}
+
+	if isValidURL(file) {
+
+		if file[0:4] == "gs://" {
+			return false, fmt.Errorf("speech api only works on Cloud Storage URI's")
+		}
+
+		req = getReqFromURI(file)
+	} else {
+		req, err = getReqFromFile(file)
+		if err != nil {
+			return false, err
+		}
+	}
+
+	return compareAuth(req, term)
+}
+
+func AuthFromReader(term string, file io.Reader) (bool, error) {
+
+	var err error
+	req := &speechpb.RecognizeRequest{}
+
+	req, err = getReqFromReader(file)
+	if err != nil {
+		return false, err
+	}
+
+	return compareAuth(req, term)
+}
+
+func compareAuth(req *speechpb.RecognizeRequest, term string) (bool, error) {
+	ann, err := findContent(req)
 
 	if err != nil {
 		return false, err
@@ -30,7 +66,7 @@ func Auth(term, file string) (bool, error) {
 	return false, nil
 }
 
-func findContent(file string) ([]string, error) {
+func findContent(req *speechpb.RecognizeRequest) ([]string, error) {
 	var err error
 	ctx := context.Background()
 
@@ -40,22 +76,6 @@ func findContent(file string) ([]string, error) {
 	}
 	defer client.Close()
 
-	req := &speechpb.RecognizeRequest{}
-
-	if isValidURL(file) {
-
-		if file[0:4] == "gs://" {
-			return nil, fmt.Errorf("speech api only works on Cloud Storage URI's")
-		}
-
-		req = getReqFromURI(file)
-	} else {
-		req, err = getReqFromFile(file)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	resp, err := client.Recognize(ctx, req)
 
 	if err != nil {
@@ -63,7 +83,7 @@ func findContent(file string) ([]string, error) {
 	}
 
 	if len(resp.Results) == 0 {
-		return nil, fmt.Errorf("unable to extract text from audio, usually wrong format: %s", err)
+		return nil, fmt.Errorf("unable to extract text from audio, usually wrong format")
 	}
 
 	res := []string{}
@@ -84,6 +104,28 @@ func getReqFromFile(file string) (*speechpb.RecognizeRequest, error) {
 	if err != nil {
 		return req, fmt.Errorf("error reading file: %s", err)
 	}
+
+	req = &speechpb.RecognizeRequest{
+		Config: &speechpb.RecognitionConfig{
+			Encoding:        speechpb.RecognitionConfig_LINEAR16,
+			SampleRateHertz: 16000,
+			LanguageCode:    "en-US",
+		},
+		Audio: &speechpb.RecognitionAudio{
+			AudioSource: &speechpb.RecognitionAudio_Content{Content: data},
+		},
+	}
+	return req, nil
+}
+
+func getReqFromReader(file io.Reader) (*speechpb.RecognizeRequest, error) {
+
+	req := &speechpb.RecognizeRequest{}
+
+	buf := new(bytes.Buffer)
+	buf.ReadFrom(file)
+
+	data := buf.Bytes()
 
 	req = &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
