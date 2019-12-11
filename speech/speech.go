@@ -37,6 +37,9 @@ func Auth(term, file string) (bool, error) {
 	return compareAuth(req, term)
 }
 
+// AuthFromReader takes a reader containing an audio file and a term and
+// compares them to each other to see if the an item matching the input term is
+// contained in the audio file
 func AuthFromReader(term string, file io.Reader) (bool, error) {
 
 	var err error
