@@ -7,7 +7,6 @@ import (
 	"github.com/tpryan/mlauth/language"
 )
 
-const key = "Location"
 const secret = "ambivalence"
 
 func main() {
@@ -25,6 +24,11 @@ func main() {
 		return
 	}
 
+	if len(os.Args) < 4 {
+		fmt.Printf("You didn't indicate a entity type. \n")
+		return
+	}
+
 	content := os.Args[1]
 	fmt.Printf("Content accepted: %s.\n", content)
 
@@ -36,8 +40,12 @@ func main() {
 	}
 	fmt.Printf("Sentiment accepted: %s.\n", sentiment)
 
+	entity := os.Args[3]
+
+	fmt.Printf("Entity Type accepted: %s.\n", sentiment)
+
 	fmt.Printf("Testing content...")
-	result, err := language.Auth(key, content, positive)
+	result, err := language.Auth(entity, content, positive)
 
 	if err != nil {
 		fmt.Printf(" %sfailed%s. \nThere was an error testing the content: %s.\n", b1, b2, err)
