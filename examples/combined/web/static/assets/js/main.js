@@ -20,9 +20,6 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-
-
-
 function getKeys(){
 
     var xmlhttp = new XMLHttpRequest();
@@ -101,8 +98,6 @@ function checkSpeech(e){
     formData.append("audio", file);
     postAPI("speech", formData);
 }
-
-
 
 function failAuth(target){
     document.querySelector(target).classList.add("item-failed");
