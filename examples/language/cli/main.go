@@ -58,6 +58,6 @@ func main() {
 		fmt.Printf("The secret is %s`%s'%s.\n", b1, secret, b2)
 		return
 	}
-	fmt.Printf("The file did not unlock the secret.\n")
+	fmt.Printf("The sentence did not unlock the secret.\n")
 
 }
