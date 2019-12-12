@@ -128,6 +128,9 @@ q{
     margin: 10px;
 }
 
+.content{
+    padding: 0 3% 0 1%;
+}
 
 
 .item{
@@ -160,6 +163,7 @@ q{
 @media only screen and (min-width: 768px) {
     .content{
         display: flex;
+        padding: 0;
     }
 
     .item{
