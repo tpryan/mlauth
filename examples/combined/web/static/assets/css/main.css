@@ -11,35 +11,9 @@ h1, h2{
     font-family: "Google Sans", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.content{
-    display: flex;
-}
 
-.item{
-    flex-wrap: wrap;
-    width: 30%;
-    margin: 0 1%;
-    text-align: center;
-    border-radius: 8px;
-    border: 6px solid #a5c0e8;
-    padding: 10px;
-    background-color: #e6eaf0;
-}
 
-.item p{
-    height: 60px;
-    position: relative;
-}
 
-.item-unlocked{
-    background-color: #e6f0eb;
-    border: 6px solid #b4f0d2;
-}
-
-.item-failed{
-    background-color: #f0e6e6;
-    border: 6px solid #eb9494
-}
 .secret{
     text-align: center;
     font-size: 18px;
@@ -152,4 +126,50 @@ q{
 
 #cheat-toggle{
     margin: 10px;
+}
+
+
+
+.item{
+    width: 94%;
+    margin: 10px 1%;
+    text-align: center;
+    border-radius: 8px;
+    padding: 10px;
+    border: 6px solid #a5c0e8;
+    background-color: #e6eaf0;
+}
+
+.item p{
+    height: 60px;
+    position: relative;
+}
+
+.item-unlocked{
+    background-color: #e6f0eb;
+    border: 6px solid #b4f0d2;
+}
+
+.item-failed{
+    background-color: #f0e6e6;
+    border: 6px solid #eb9494
+}
+
+
+
+@media only screen and (min-width: 768px) {
+    .content{
+        display: flex;
+    }
+
+    .item{
+        flex-wrap: wrap;
+        width: 30%;
+        margin: 0 1%;
+        border: 6px solid #a5c0e8;
+        background-color: #e6eaf0;
+    }
+
+
+
 }
