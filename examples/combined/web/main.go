@@ -119,6 +119,7 @@ func handleLanguage(w http.ResponseWriter, r *http.Request) {
 	auth, err := authLanguage(sentence)
 	if err != nil {
 		writeResponse(w, http.StatusUnauthorized, err.Error())
+		return
 	}
 
 	rep := AuthResponse{Auth: auth, Token: tokenLanguage}
@@ -126,10 +127,12 @@ func handleLanguage(w http.ResponseWriter, r *http.Request) {
 	b, err := json.Marshal(rep)
 	if err != nil {
 		writeResponse(w, http.StatusUnauthorized, err.Error())
+		return
 	}
 	resp := string(b)
 
 	writeResponse(w, http.StatusOK, resp)
+	return
 
 }
 
@@ -154,10 +157,12 @@ func handleVision(w http.ResponseWriter, r *http.Request) {
 	b, err := json.Marshal(rep)
 	if err != nil {
 		writeResponse(w, http.StatusUnauthorized, err.Error())
+		return
 	}
 	resp := string(b)
 
 	writeResponse(w, http.StatusOK, resp)
+	return
 
 }
 
@@ -182,10 +187,12 @@ func handleSpeech(w http.ResponseWriter, r *http.Request) {
 	b, err := json.Marshal(rep)
 	if err != nil {
 		writeResponse(w, http.StatusUnauthorized, err.Error())
+		return
 	}
 	resp := string(b)
 
 	writeResponse(w, http.StatusOK, resp)
+	return
 
 }
 

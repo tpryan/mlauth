@@ -17,7 +17,22 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector("#text-language").addEventListener("keyup", checkLanguage);   
     document.querySelector("#file-speech").addEventListener("change", checkSpeech);   
     document.querySelector("#file-vision").addEventListener("change", checkVision);   
+    document.querySelector("#cheat-toggle").addEventListener("click", toggleCheat);   
 });
+
+function toggleCheat(){
+    var cheat = document.querySelector(".cheat");
+    var btn = document.querySelector("#cheat-toggle");
+    console.log(cheat.style.display)
+    if (cheat.style.display == "none" || cheat.style.display == ""){
+        cheat.style.display = "block";
+        btn.innerHTML = "Hide Cheats";
+
+    } else {
+        cheat.style.display = "none";
+        btn.innerHTML = "Show Cheats";
+    }
+}
 
 
 function getKeys(){
@@ -111,6 +126,8 @@ function passAuth(target){
     content.classList.remove("item-failed");
     document.querySelector(target + " .icon").src = "assets/img/icon-unlock.png";
     document.querySelector(target + " .alert").style.visibility = "hidden";
+    document.querySelector(target + " .success").style.display = "block";
+    document.querySelector(target + " .upload").style.display = "none";
     checkSecret();
 }
 
@@ -145,4 +162,6 @@ function checkSecret(){
 function writeSecret(secret){
     document.querySelector(".secret-content").innerHTML = secret;
     document.querySelector(".secret").style.display = "block";
+    document.querySelector(".cheat").style.display = "none";
+    document.querySelector("#cheat-toggle").style.display = "none";
 }

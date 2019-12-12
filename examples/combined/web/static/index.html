@@ -14,37 +14,58 @@
         <h2>Vision Test</h2>
         <div class="alert">That image didn't match what we are looking for.</div>
         <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
-        <p>Upload a picture of a <q class="key"></q>.</p>
-        <label for="file-vision">
-            <div class="lbl">Upload Picture:</div>
-            <input id="file-vision" type="file" class="file" title=" ">
-        </label>
+        <div class="upload">
+            <p>Upload a picture of a <q class="key"></q>.</p>
+            <label for="file-vision">
+                <div class="lbl">Upload Picture:</div>
+                <input id="file-vision" type="file" class="file" title=" ">
+            </label>
+        </div>
+        <div class="success">Your image file worked, section unlocked.</div>
     </div>
     <div class="speech item">
         <h2>Speech Test</h2>
         <div class="alert">That sound clip didn't match what we are looking for.</div>
         <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
-        <p>Upload a audio file that contains the word <q class="key"></q>.</p>
-        <label for="file-speech">
-            <div class="lbl">Upload audio file:</div>
-            <input id="file-speech" type="file" class="file" title=" ">
-        </label>
+        <div class="upload">
+            <p>Upload a audio file that contains the word <q class="key"></q>.</p>
+            <label for="file-speech">
+                <div class="lbl">Upload audio file:</div>
+                <input id="file-speech" type="file" class="file" title=" ">
+            </label>
+        </div>
+        <div class="success">Your audio file worked, section unlocked.</div>
     </div>
     <div class="language item">
         <h2>Language Test</h2>
         <div class="alert">That sentence didn't contain what we are looking for.</div>
         <img class="icon" src="assets/img/icon-lock.png" width="200" height="200">
-        <p>Enter a sentence that contains a <em class="positive"></em> statement about a <q class="key"></q>. </p>
-        <label for="text-language">
-            <div class="lbl">Enter Sentence:</div>
-            <input id="text-language" class="text-box" type="text">
-        </label>
+        <div class="upload">
+            <p>Enter a sentence that contains a <em class="positive"></em> statement about a <q class="key"></q>. </p>
+            <label for="text-language">
+                <div class="lbl">Enter Sentence:</div>
+                <input id="text-language" class="text-box" type="text">
+            </label>
+        </div>
+        <div class="success">Your sentence worked, section unlocked.</div>
     </div>
 </div>
 <div class="secret">
     <p>You have unlocked the secret content:</p>
     <div class="secret-content">This is the secret content</div>
-</div>    
+</div>
+
+<button id="cheat-toggle">Show Cheats</button>
+<div class="cheat">
+    <p>If you are having trouble finding the correct files and phrases to  
+        unlock the app, you can download them here:</p>
+    <ul>
+        <li><a href="downloads/right.jpg">right.jpg</a> - A Picture of a <em>Golden Retreiver</em>.</li>
+        <li><a href="downloads/right.raw">right.raw</a> - An audio file containing the word <em>Brooklyn</em>.</li>
+        <li>"I love New York" - A sentence that will unlock the Language Test.</li>
+    </ul>
+</div>
+
     
 <script type="text/javascript" src="/assets/js/main.js"></script>
 </body>

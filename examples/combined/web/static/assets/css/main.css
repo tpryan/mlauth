@@ -127,3 +127,29 @@ em, q{
 q{
     font-style: italic;
 }
+
+.success{
+    font-style: italic;
+    font-weight: 800;
+    margin: 10px;
+    display: none;
+}
+
+.cheat{
+    text-align: center;
+    font-size: 18px;
+    border-radius: 8px;
+    margin: 15px 1%;
+    border: 6px solid #ccc;
+    padding: 10px;
+    background-color: #efefef;
+    display: none;
+}
+
+.cheat li{
+    text-align: left;
+}
+
+#cheat-toggle{
+    margin: 10px;
+}
