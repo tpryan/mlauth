@@ -15,13 +15,6 @@ export mlauth_bucket=[Name of testing bucket]
 ```` bash
 make init
 ````
-* Set the env variable for Google Cloud default credentials
-```` bash
-export GOOGLE_APPLICATION_CREDENTIALS=[Project Path]/creds/creds.json 
-```` 
-
-You can run `make test` afterwards to determine if everything worked. 
-
 
 This will do the following:
 * Create a bucket for testing
@@ -33,5 +26,16 @@ credentials mode
     * Speech
     * Vision
     * Natural Language
+
+
+* Set the env variable for Google Cloud default credentials
+```` bash
+export GOOGLE_APPLICATION_CREDENTIALS=[Project Path]/creds/creds.json 
+```` 
+
+You can run `make test` afterwards to determine if everything worked. 
+
+
+
 
 This is not an official Google product. 
