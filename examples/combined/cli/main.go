@@ -172,7 +172,7 @@ func authVision(filename string) error {
 		return errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		runClear = true
 		step++
 		fmt.Printf("passed.\n")
@@ -194,7 +194,7 @@ func authSpeech(filename string) error {
 		return errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		runClear = true
 		step++
 		fmt.Printf("passed.\n")
@@ -218,7 +218,7 @@ func authLanguage(content string) error {
 		return errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		runClear = true
 		step++
 		fmt.Printf("passed.\n")

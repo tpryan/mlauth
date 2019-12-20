@@ -1,4 +1,4 @@
-/* 
+/*
  *  Copyright 2019 Google Inc. All Rights Reserved.
  *  //
  *  Licensed under the Apache License, Version 2.0 (the "License");
@@ -220,7 +220,7 @@ func authLanguage(content string) (bool, error) {
 		return false, errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		return true, nil
 	}
 	return false, errorAuthFalse
@@ -235,7 +235,7 @@ func authVision(file io.Reader) (bool, error) {
 		return false, errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		return true, nil
 	}
 	return false, errorAuthFalse
@@ -249,7 +249,7 @@ func authSpeech(file io.Reader) (bool, error) {
 		return false, errors.Wrap(err, "could not authenticate content: ")
 	}
 
-	if result {
+	if result.Result {
 		return true, nil
 	}
 	return false, errorAuthFalse

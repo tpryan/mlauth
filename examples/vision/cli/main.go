@@ -14,6 +14,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -32,10 +33,16 @@ func main() {
 		return
 	}
 
-	arg := os.Args[1]
-	fmt.Printf("File accepted: %s.\n", arg)
+	verbose := ""
+	input := os.Args[1]
+	if len(os.Args) > 2 {
+		verbose = os.Args[2]
+
+	}
+
+	fmt.Printf("File accepted: %s.\n", input)
 	fmt.Printf("Testing file...")
-	result, err := vision.Auth(key, arg)
+	result, err := vision.Auth(key, input)
 
 	if err != nil {
 		fmt.Printf(" %sfailed%s. \nThere was an error testing the file: %s.\n", b1, b2, err)
@@ -43,10 +50,20 @@ func main() {
 	}
 	fmt.Printf(" %sdone%s.\n", b1, b2)
 
-	if result {
+	if result.Result {
 		fmt.Printf("The secret is %s`%s'%s.\n", b1, secret, b2)
+		if verbose == "-v" {
+			txt, _ := json.MarshalIndent(result, " ", "   ")
+			fmt.Printf("%s\n", txt)
+		}
 		return
 	}
 	fmt.Printf("The file did not unlock the secret.\n")
+
+	if verbose == "-v" {
+		txt, _ := json.MarshalIndent(result, " ", "   ")
+		fmt.Printf("%s\n", txt)
+	}
+
 	return
 }

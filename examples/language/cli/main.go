@@ -14,6 +14,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 
@@ -55,22 +56,40 @@ func main() {
 
 	entity := os.Args[3]
 
-	fmt.Printf("Entity Type accepted: %s.\n", sentiment)
+	verbose := ""
+	if len(os.Args) > 4 {
+		verbose = os.Args[4]
+
+	}
+
+	fmt.Printf("Entity Type accepted: %s.\n", entity)
 
 	fmt.Printf("Testing content...")
 	result, err := language.Auth(entity, content, positive)
 
 	if err != nil {
 		fmt.Printf(" %sfailed%s. \nThere was an error testing the content: %s.\n", b1, b2, err)
+		if verbose == "-v" {
+			txt, _ := json.MarshalIndent(result, " ", "   ")
+			fmt.Printf("%s\n", txt)
+		}
 		return
 	}
 
 	fmt.Printf(" %sdone%s.\n", b1, b2)
 
-	if result {
+	if result.Result {
 		fmt.Printf("The secret is %s`%s'%s.\n", b1, secret, b2)
+		if verbose == "-v" {
+			txt, _ := json.MarshalIndent(result, " ", "   ")
+			fmt.Printf("%s\n", txt)
+		}
 		return
 	}
 	fmt.Printf("The sentence did not unlock the secret.\n")
+	if verbose == "-v" {
+		txt, _ := json.MarshalIndent(result, " ", "   ")
+		fmt.Printf("%s\n", txt)
+	}
 
 }
