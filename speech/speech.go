@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// Package speech wraps the Cloud Speech API and provides an auth
+// method that allows you to check an input audio file for an input term.
 package speech
 
 import (
@@ -28,7 +31,7 @@ import (
 
 // Auth takes an audio file and a term and compares them to each other to see if
 // the an item matching the input term is contained in the audio file
-func Auth(term, file string) (bool, error) {
+func Auth(term, file string) (AuthResult, error) {
 
 	var err error
 	req := &speechpb.RecognizeRequest{}
@@ -36,14 +39,14 @@ func Auth(term, file string) (bool, error) {
 	if isValidURL(file) {
 
 		if file[0:4] == "gs://" {
-			return false, fmt.Errorf("speech api only works on Cloud Storage URI's")
+			return AuthResult{}, fmt.Errorf("speech api only works on Cloud Storage URI's")
 		}
 
 		req = getReqFromURI(file)
 	} else {
 		req, err = getReqFromFile(file)
 		if err != nil {
-			return false, err
+			return AuthResult{}, err
 		}
 	}
 
@@ -53,61 +56,54 @@ func Auth(term, file string) (bool, error) {
 // AuthFromReader takes a reader containing an audio file and a term and
 // compares them to each other to see if the an item matching the input term is
 // contained in the audio file
-func AuthFromReader(term string, file io.Reader) (bool, error) {
+func AuthFromReader(term string, file io.Reader) (AuthResult, error) {
 
 	var err error
 	req := &speechpb.RecognizeRequest{}
 
 	req, err = getReqFromReader(file)
 	if err != nil {
-		return false, err
+		return AuthResult{}, err
 	}
 
 	return compareAuth(req, term)
 }
 
-func compareAuth(req *speechpb.RecognizeRequest, term string) (bool, error) {
-	ann, err := findContent(req)
+func compareAuth(req *speechpb.RecognizeRequest, term string) (AuthResult, error) {
+	resp, err := findContent(req)
 
 	if err != nil {
-		return false, err
+		return resp, err
 	}
 
-	for _, v := range ann {
-		if strings.Contains(strings.ToUpper(v), strings.ToUpper(term)) {
-			return true, nil
-		}
-	}
+	resp.AuthTerm(term)
 
-	return false, nil
+	return resp, nil
 }
 
-func findContent(req *speechpb.RecognizeRequest) ([]string, error) {
+func findContent(req *speechpb.RecognizeRequest) (AuthResult, error) {
 	var err error
 	ctx := context.Background()
 
+	res := AuthResult{}
+
 	client, err := speech.NewClient(ctx)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
 	defer client.Close()
 
 	resp, err := client.Recognize(ctx, req)
 
 	if err != nil {
-		return nil, fmt.Errorf("error recogniziong content file: %s", err)
+		return res, fmt.Errorf("error recogniziong content file: %s", err)
 	}
 
 	if len(resp.Results) == 0 {
-		return nil, fmt.Errorf("unable to extract text from audio, usually wrong format")
+		return res, fmt.Errorf("unable to extract text from audio, usually wrong format")
 	}
 
-	res := []string{}
-	for _, result := range resp.Results {
-		for _, alt := range result.Alternatives {
-			res = append(res, alt.Transcript)
-		}
-	}
+	res.Raw = resp
 
 	return res, nil
 }
@@ -177,4 +173,30 @@ func isValidURL(toTest string) bool {
 		return false
 	}
 	return true
+}
+
+// AuthResult is the return from auth operations. It allows us to show
+// tbe pure result and the work.
+type AuthResult struct {
+	Result bool                        `json:"result"`
+	Raw    *speechpb.RecognizeResponse `json:"raw"`
+}
+
+// AuthTerm does the check to see if the language query worked
+func (l *AuthResult) AuthTerm(term string) error {
+
+	res := []string{}
+	for _, result := range l.Raw.Results {
+		for _, alt := range result.Alternatives {
+			res = append(res, alt.Transcript)
+		}
+	}
+
+	for _, v := range res {
+		if strings.Contains(strings.ToUpper(v), strings.ToUpper(term)) {
+			l.Result = true
+		}
+	}
+
+	return nil
 }

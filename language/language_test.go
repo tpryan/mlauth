@@ -32,9 +32,12 @@ func TestAuth(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := Auth(c.entityType, c.text, c.positive)
-		if got != c.want {
-			t.Errorf("Auth('%s', '%s', '%t') got %t, want %t", c.entityType, c.text, c.positive, got, c.want)
+		got, err := Auth(c.entityType, c.text, c.positive)
+		if err != nil {
+			t.Errorf("Auth('%s', '%s', '%t') got error %v", c.entityType, c.text, c.positive, err)
+		}
+		if got.Result != c.want {
+			t.Errorf("Auth('%s', '%s', '%t') got %t, want %t", c.entityType, c.text, c.positive, got.Result, c.want)
 		}
 	}
 }

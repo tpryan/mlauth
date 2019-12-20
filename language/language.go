@@ -11,6 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+
+// Package language wraps the Cloud Natural Language API and provides an auth
+// method that allows you to check an input text for an input term.
 package language
 
 import (
@@ -22,40 +25,32 @@ import (
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 )
 
-func Auth(entityType, source string, positive bool) (bool, error) {
+// Auth takes string of text and a term and compares them to each other to see
+// if the an item matching the sentiment is contained in the audio file
+func Auth(entityType, source string, positive bool) (AuthResult, error) {
 
-	ann, err := findSentiment(source)
+	res, err := findSentiment(source)
 
 	if err != nil {
-		return false, err
+		return res, err
 	}
 
-	termSent, ok := ann[strings.ToUpper(entityType)]
-	if !ok {
-		return false, nil
+	if err := res.AuthTerm(entityType, positive); err != nil {
+		return res, err
 	}
 
-	if positive {
-		if termSent > 0 {
-			return true, nil
-		}
-		return false, nil
-	}
+	return res, nil
 
-	if termSent < 0 {
-		return true, nil
-	}
-
-	return false, nil
 }
 
-func findSentiment(source string) (map[string]float32, error) {
+func findSentiment(source string) (AuthResult, error) {
 	var err error
 	ctx := context.Background()
+	res := AuthResult{}
 
 	client, err := language.NewClient(ctx)
 	if err != nil {
-		return nil, err
+		return res, err
 	}
 	defer client.Close()
 
@@ -72,14 +67,45 @@ func findSentiment(source string) (map[string]float32, error) {
 	resp, err := client.AnalyzeEntitySentiment(ctx, req)
 
 	if err != nil {
-		return nil, fmt.Errorf("error analyzing text: %s", err)
+		return res, fmt.Errorf("error analyzing text: %s", err)
 	}
+
+	res.Raw = resp
+
+	return res, nil
+}
+
+// AuthResult is the return from auth operations. It allows us to show
+// tbe pure result and the work.
+type AuthResult struct {
+	Result bool                                       `json:"result"`
+	Raw    *languagepb.AnalyzeEntitySentimentResponse `json:"raw"`
+}
+
+// AuthTerm does the check to see if the language query worked
+func (l *AuthResult) AuthTerm(entityType string, positive bool) error {
 
 	res := make(map[string]float32)
 
-	for _, v := range resp.Entities {
+	for _, v := range l.Raw.Entities {
 		res[strings.ToUpper(v.Type.String())] = v.Sentiment.Score
 	}
 
-	return res, nil
+	sent, ok := res[strings.ToUpper(entityType)]
+	if !ok {
+		return nil
+	}
+
+	if positive {
+		if sent > 0 {
+			l.Result = true
+		}
+		return nil
+	}
+
+	if sent < 0 {
+		l.Result = true
+	}
+
+	return nil
 }

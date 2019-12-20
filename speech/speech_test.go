@@ -47,8 +47,8 @@ func TestAuth(t *testing.T) {
 
 	for _, c := range cases {
 		got, _ := Auth(c.term, c.file)
-		if got != c.want {
-			t.Errorf("Auth('%s', '%s') got %t, want %t", c.term, c.file, got, c.want)
+		if got.Result != c.want {
+			t.Errorf("Auth('%s', '%s') got %t, want %t", c.term, c.file, got.Result, c.want)
 		}
 	}
 }
@@ -106,12 +106,16 @@ func TestFindContent(t *testing.T) {
 		}
 
 		found := false
-		for _, r := range got {
-			if strings.Contains(strings.ToUpper(r), strings.ToUpper(c.term)) {
-				found = true
-				break
+
+		for _, result := range got.Raw.Results {
+			for _, alt := range result.Alternatives {
+				if strings.Contains(strings.ToUpper(alt.Transcript), strings.ToUpper(c.term)) {
+					found = true
+					break
+				}
 			}
 		}
+
 		if !found {
 			t.Errorf("findLabels(%s) should have found: %s in %v", c.file, c.term, got)
 		}

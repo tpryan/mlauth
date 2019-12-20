@@ -29,7 +29,7 @@ import (
 
 // Auth takes a picture and a term and compares them to each other to see if
 // the an item matching the input term is contained in the image
-func Auth(term, file string) (bool, error) {
+func Auth(term, file string) (AuthResult, error) {
 
 	var image *pb.Image
 	var err error
@@ -39,7 +39,7 @@ func Auth(term, file string) (bool, error) {
 	} else {
 		image, err = imageFromFile(file)
 		if err != nil {
-			return false, err
+			return AuthResult{}, err
 		}
 	}
 
@@ -48,50 +48,46 @@ func Auth(term, file string) (bool, error) {
 
 // AuthFromReader takes a picture and a term and compares them to each other
 // to see if the an item matching the input term is contained in the image
-func AuthFromReader(term string, file io.Reader) (bool, error) {
+func AuthFromReader(term string, file io.Reader) (AuthResult, error) {
 
 	image, err := vision.NewImageFromReader(file)
 	if err != nil {
-		return false, err
+		return AuthResult{}, err
 	}
 
 	return compareAuth(image, term)
 }
 
-func compareAuth(image *pb.Image, term string) (bool, error) {
-	ann, err := findLabels(image)
+func compareAuth(image *pb.Image, term string) (AuthResult, error) {
+	resp, err := findLabels(image)
 
 	if err != nil {
-		return false, err
+		return resp, err
 	}
 
-	for _, v := range ann {
-		if strings.Contains(strings.ToUpper(v), strings.ToUpper(term)) {
-			return true, nil
-		}
-	}
+	resp.AuthTerm(term)
 
-	return false, nil
+	return resp, nil
 }
 
-func findLabels(image *pb.Image) ([]string, error) {
+func findLabels(image *pb.Image) (AuthResult, error) {
 	ctx := context.Background()
+	resp := AuthResult{}
 
 	client, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
 	defer client.Close()
 
 	annotations, err := client.DetectLabels(ctx, image, nil, 10)
 	if err != nil {
-		return nil, err
+		return resp, err
 	}
-	var labels []string
-	for _, annotation := range annotations {
-		labels = append(labels, annotation.Description)
-	}
-	return labels, nil
+
+	resp.Raw = annotations
+
+	return resp, nil
 }
 
 func imageFromFile(path string) (*pb.Image, error) {
@@ -121,4 +117,27 @@ func isValidURL(toTest string) bool {
 	}
 	return false
 
+}
+
+// AuthResult is the return from auth operations. It allows us to show
+// tbe pure result and the work.
+type AuthResult struct {
+	Result bool                   `json:"result"`
+	Raw    []*pb.EntityAnnotation `json:"raw"`
+}
+
+// AuthTerm does the check to see if the language query worked
+func (l *AuthResult) AuthTerm(term string) {
+	var labels []string
+	for _, annotation := range l.Raw {
+		labels = append(labels, annotation.Description)
+	}
+
+	for _, v := range labels {
+		if strings.Contains(strings.ToUpper(v), strings.ToUpper(term)) {
+			l.Result = true
+			return
+		}
+	}
+	return
 }

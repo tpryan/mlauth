@@ -35,7 +35,6 @@ func TestAuth(t *testing.T) {
 		{"Golden Retriever", "testdata/dog.jpg", true},
 		{"cat", "testdata/dog.jpg", false},
 		{"soda", "testdata/soda.jpg", true},
-		{"soda", "testdata/soda.jpg", true},
 		{"can", "testdata/soda.jpg", true},
 		{"coca-cola", "testdata/soda.jpg", true},
 		{"pepsi", "testdata/soda.jpg", false},
@@ -45,7 +44,6 @@ func TestAuth(t *testing.T) {
 
 		{"Golden Retriever", gcs + "/dog.jpg", true},
 		{"cat", gcs + "/dog.jpg", false},
-		{"soda", gcs + "/soda.jpg", true},
 		{"soda", gcs + "/soda.jpg", true},
 		{"can", gcs + "/soda.jpg", true},
 		{"coca-cola", gcs + "/soda.jpg", true},
@@ -57,7 +55,6 @@ func TestAuth(t *testing.T) {
 		{"Golden Retriever", web + "/dog.jpg", true},
 		{"cat", web + "/dog.jpg", false},
 		{"soda", web + "/soda.jpg", true},
-		{"soda", web + "/soda.jpg", true},
 		{"can", web + "/soda.jpg", true},
 		{"coca-cola", web + "/soda.jpg", true},
 		{"pepsi", web + "/soda.jpg", false},
@@ -68,8 +65,8 @@ func TestAuth(t *testing.T) {
 
 	for _, c := range cases {
 		got, _ := Auth(c.term, c.file)
-		if got != c.want {
-			t.Errorf("Auth('%s', '%s') got %t, want %t", c.term, c.file, got, c.want)
+		if got.Result != c.want {
+			t.Errorf("Auth('%s', '%s') got %t, want %t also %v", c.term, c.file, got.Result, c.want, got)
 		}
 	}
 }
@@ -130,8 +127,9 @@ func TestFindLabels(t *testing.T) {
 		}
 
 		found := false
-		for _, r := range got {
-			if strings.Contains(strings.ToUpper(r), strings.ToUpper(c.term)) {
+
+		for _, r := range got.Raw {
+			if strings.Contains(strings.ToUpper(r.Description), strings.ToUpper(c.term)) {
 				found = true
 				break
 			}
