@@ -28,6 +28,9 @@ credentials mode
     * Natural Language
 
 
+After this is done you need to set the environment variable for api calls to 
+work. 
+
 * Set the env variable for Google Cloud default credentials
 ```` bash
 export GOOGLE_APPLICATION_CREDENTIALS=[Project Path]/creds/creds.json 
