@@ -46,7 +46,7 @@ func TestAuth(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		got, _ := Auth(c.term, c.file)
+		got, _ := Auth(c.term, 16000, 1, c.file)
 		if got.Result != c.want {
 			t.Errorf("Auth('%s', '%s') got %t, want %t", c.term, c.file, got.Result, c.want)
 		}
@@ -78,29 +78,35 @@ func TestFindContent(t *testing.T) {
 
 		var req *speechpb.RecognizeRequest
 		var err error
+		var method string
 
 		if isValidURL(c.file) {
 
 			if c.file[0:4] == "gs://" {
 				if !c.shouldErr {
-					t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+					t.Errorf("data url(%s) should point to Cloud Storage url", c.file)
 				}
 			}
-
+			method = "getReqFromURI"
 			req = getReqFromURI(c.file)
 		} else {
+			method = "getReqFromFile"
 			req, err = getReqFromFile(c.file)
 			if err != nil {
 				if !c.shouldErr {
-					t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+					t.Errorf("getReqFromFile(%s) threw error: %s", c.file, err)
 				}
+				break
 			}
 		}
+
+		req.Config.SampleRateHertz = int32(16000)
+		req.Config.AudioChannelCount = int32(1)
 
 		got, err := findContent(req)
 		if err != nil {
 			if !c.shouldErr {
-				t.Errorf("findLabels(%s) threw error: %s", c.file, err)
+				t.Errorf("findContent(%s) [%s] threw error: %s", c.file, method, err)
 			}
 			continue
 		}

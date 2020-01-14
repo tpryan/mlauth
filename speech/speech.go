@@ -31,7 +31,7 @@ import (
 
 // Auth takes an audio file and a term and compares them to each other to see if
 // the an item matching the input term is contained in the audio file
-func Auth(term, file string) (AuthResult, error) {
+func Auth(term string, rate, channels int32, file string) (AuthResult, error) {
 
 	var err error
 	req := &speechpb.RecognizeRequest{}
@@ -50,13 +50,16 @@ func Auth(term, file string) (AuthResult, error) {
 		}
 	}
 
+	req.Config.SampleRateHertz = rate
+	req.Config.AudioChannelCount = channels
+
 	return compareAuth(req, term)
 }
 
 // AuthFromReader takes a reader containing an audio file and a term and
 // compares them to each other to see if the an item matching the input term is
 // contained in the audio file
-func AuthFromReader(term string, file io.Reader) (AuthResult, error) {
+func AuthFromReader(term string, rate, channels int32, file io.Reader) (AuthResult, error) {
 
 	var err error
 	req := &speechpb.RecognizeRequest{}
@@ -65,6 +68,9 @@ func AuthFromReader(term string, file io.Reader) (AuthResult, error) {
 	if err != nil {
 		return AuthResult{}, err
 	}
+
+	req.Config.SampleRateHertz = rate
+	req.Config.AudioChannelCount = channels
 
 	return compareAuth(req, term)
 }
@@ -100,16 +106,15 @@ func findContent(req *speechpb.RecognizeRequest) (AuthResult, error) {
 	}
 
 	if len(resp.Results) == 0 {
-		return res, fmt.Errorf("unable to extract text from audio, usually wrong format")
+		res.Raw = resp
+		return res, fmt.Errorf("unable to extract text from audio, no words or wrong format")
 	}
 
 	res.Raw = resp
-
 	return res, nil
 }
 
 func getReqFromFile(file string) (*speechpb.RecognizeRequest, error) {
-
 	req := &speechpb.RecognizeRequest{}
 
 	data, err := ioutil.ReadFile(file)
@@ -119,9 +124,8 @@ func getReqFromFile(file string) (*speechpb.RecognizeRequest, error) {
 
 	req = &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_LINEAR16,
-			SampleRateHertz: 16000,
-			LanguageCode:    "en-US",
+			Encoding:     speechpb.RecognitionConfig_LINEAR16,
+			LanguageCode: "en-US",
 		},
 		Audio: &speechpb.RecognitionAudio{
 			AudioSource: &speechpb.RecognitionAudio_Content{Content: data},
@@ -141,9 +145,8 @@ func getReqFromReader(file io.Reader) (*speechpb.RecognizeRequest, error) {
 
 	req = &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_LINEAR16,
-			SampleRateHertz: 16000,
-			LanguageCode:    "en-US",
+			Encoding:     speechpb.RecognitionConfig_LINEAR16,
+			LanguageCode: "en-US",
 		},
 		Audio: &speechpb.RecognitionAudio{
 			AudioSource: &speechpb.RecognitionAudio_Content{Content: data},
@@ -156,9 +159,8 @@ func getReqFromURI(path string) *speechpb.RecognizeRequest {
 
 	return &speechpb.RecognizeRequest{
 		Config: &speechpb.RecognitionConfig{
-			Encoding:        speechpb.RecognitionConfig_LINEAR16,
-			SampleRateHertz: 16000,
-			LanguageCode:    "en-US",
+			Encoding:     speechpb.RecognitionConfig_LINEAR16,
+			LanguageCode: "en-US",
 		},
 		Audio: &speechpb.RecognitionAudio{
 			AudioSource: &speechpb.RecognitionAudio_Uri{Uri: path},

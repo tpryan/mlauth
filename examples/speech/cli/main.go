@@ -41,7 +41,7 @@ func main() {
 
 	fmt.Printf("File accepted: %s.\n", input)
 	fmt.Printf("Testing file...")
-	result, err := speech.Auth(key, input)
+	result, err := speech.Auth(key, 16000, 1, input)
 
 	if err != nil {
 		fmt.Printf(" %sfailed%s. \nThere was an error testing the file: %s.\n", b1, b2, err)
